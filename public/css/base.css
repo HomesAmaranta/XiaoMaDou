@@ -1,11 +1,27 @@
 :root {
-  --green: #0b6e3b;
-  --green-d: #084d29;
-  --gold: #f5c542;
-  --red: #d33;
-  --blue: #23a8ef;
-  --mint: #12d2a6;
-  --ink: #36558f;
+  /* —— 浅色极光 · 磨砂玻璃主题 —— */
+  --ink: #3c4173;          /* 主文字:深靛蓝 */
+  --muted: #8089b6;        /* 次要文字 */
+  --line: rgba(255,255,255,.65);
+  --line-soft: rgba(120,130,200,.18);
+
+  --accent: #2bb6d4;       /* 青蓝 */
+  --accent-2: #5b8def;     /* 蓝 */
+  --teal: #2dd4bf;
+  --coral: #ff7e9b;        /* 珊瑚粉点缀 */
+  --gold: #f4b740;
+  --gold-d: #d99613;
+  --red: #f2647a;
+  --blue: #5b8def;
+
+  --grad-primary: linear-gradient(135deg, #34d0d6 0%, #4f96f0 100%);
+  --grad-coral: linear-gradient(135deg, #ffa07e 0%, #ff6f9b 100%);
+
+  --glass: rgba(255,255,255,.52);
+  --glass-strong: rgba(255,255,255,.74);
+  --shadow: 0 14px 36px rgba(86,98,170,.16);
+  --shadow-sm: 0 6px 18px rgba(86,98,170,.12);
+
   --card-w: 108px;
   --card-h: 150px;
 }
@@ -16,31 +32,58 @@ html, body {
   margin: 0;
   height: 100%;
   font-family: -apple-system, "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
-  background: radial-gradient(circle at 50% 30%, var(--green) 0%, var(--green-d) 100%);
-  color: #fff;
+  background: linear-gradient(135deg, #eef0ff 0%, #e9f6ff 100%);
+  color: var(--ink);
   overflow: hidden;
+}
+
+/* 流动的浅色极光背景层 */
+body::before {
+  content: "";
+  position: fixed;
+  inset: -25%;
+  z-index: -1;
+  background:
+    radial-gradient(at 15% 18%, rgba(182,170,255,.82) 0%, transparent 45%),
+    radial-gradient(at 85% 12%, rgba(150,206,255,.85) 0%, transparent 48%),
+    radial-gradient(at 80% 86%, rgba(150,240,220,.70) 0%, transparent 46%),
+    radial-gradient(at 18% 88%, rgba(255,190,216,.72) 0%, transparent 44%);
+  animation: aurora-drift 26s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+@keyframes aurora-drift {
+  from { transform: translate3d(-2%, -1%, 0) scale(1.06); }
+  to   { transform: translate3d(2.5%, 2%, 0) scale(1.14); }
+}
+@media (prefers-reduced-motion: reduce) {
+  body::before { animation: none; }
 }
 
 .screen { position: absolute; inset: 0; display: flex; flex-direction: column; }
 .hidden { display: none !important; }
 
 .btn {
-  border: none;
-  border-radius: 10px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
   padding: 8px 14px;
   font-size: 15px;
-  background: rgba(255,255,255,.15);
-  color: #fff;
+  background: rgba(255,255,255,.58);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  color: var(--ink);
   cursor: pointer;
-  transition: .15s;
+  transition: transform .16s, background .16s, box-shadow .16s;
+  box-shadow: var(--shadow-sm);
 }
-.btn:hover { background: rgba(255,255,255,.28); }
-.btn:disabled { opacity: .4; cursor: not-allowed; }
-.btn.primary { background: var(--gold); color: #5a3d00; font-weight: 700; }
-.btn.blue { background: linear-gradient(#35b9ff, #1397de); color: #fff; font-weight: 800; box-shadow: 0 4px 10px rgba(19,151,222,.25); }
-.btn.mint { background: linear-gradient(#20dfb8, #08bf96); color: #fff; font-weight: 800; box-shadow: 0 4px 10px rgba(8,191,150,.25); }
-.btn.debug { background: rgba(255,255,255,.18); color: #fff; border: 1px solid rgba(255,255,255,.28); }
-.btn.danger { background: var(--red); }
+.btn:hover { background: rgba(255,255,255,.82); transform: translateY(-1px); }
+.btn:active { transform: translateY(0); }
+.btn:disabled { opacity: .45; cursor: not-allowed; transform: none; }
+.btn.primary { background: var(--grad-primary); color: #fff; font-weight: 700; border-color: transparent; box-shadow: 0 8px 20px rgba(72,150,224,.32); }
+.btn.primary:hover { box-shadow: 0 10px 24px rgba(72,150,224,.4); }
+.btn.blue { background: var(--grad-primary); color: #fff; font-weight: 800; border-color: transparent; box-shadow: 0 8px 20px rgba(72,150,224,.32); }
+.btn.mint { background: var(--grad-coral); color: #fff; font-weight: 800; border-color: transparent; box-shadow: 0 8px 20px rgba(255,123,150,.32); }
+.btn.debug { background: rgba(255,255,255,.5); color: var(--muted); }
+.btn.danger { background: linear-gradient(135deg, #ff8a9e, #f2647a); color: #fff; border-color: transparent; }
 .btn.big { padding: 14px 20px; font-size: 18px; }
 .btn.small { padding: 4px 10px; font-size: 13px; }
 
@@ -49,9 +92,13 @@ html, body {
   top: 16px;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(0,0,0,.85);
+  background: rgba(60,65,115,.9);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  color: #fff;
   padding: 10px 18px;
-  border-radius: 10px;
+  border-radius: 12px;
   z-index: 50;
   font-size: 14px;
+  box-shadow: var(--shadow);
 }

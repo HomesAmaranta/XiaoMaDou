@@ -12,6 +12,10 @@ const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer);
 
+app.use('/card_picture', express.static(`${PUBLIC_DIR}/card_picture`, {
+  maxAge: '30d',
+  immutable: true,
+}));
 app.use(express.static(PUBLIC_DIR));
 registerSocketHandlers(io);
 

@@ -1,6 +1,6 @@
 import { $, escapeHtml, toast } from './dom.js';
-import { cardEl } from './cards.js';
-import { renderTable } from './tableRenderer.js';
+import { cardEl, preloadCardImages } from './cards.js';
+import { renderTable, startClock } from './tableRenderer.js';
 
 const socket = io();
 const DEBUG_MODE = new URLSearchParams(window.location.search).has('debug');
@@ -136,6 +136,8 @@ function bindSocketEvents() {
     state = s;
     showTable();
     render();
+    // 计时器仅在收到服务器新状态时重置,本地重渲染(如「清空」)不打断倒计时
+    startClock(s);
   });
 
   socket.on('replay:list', ({ replays }) => {
@@ -320,3 +322,4 @@ function renderReplayDetail(replay) {
 bindSocketEvents();
 bindDomEvents();
 showLogin();
+preloadCardImages();

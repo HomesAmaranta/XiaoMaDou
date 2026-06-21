@@ -15,7 +15,7 @@ function seatAvatarText(p, seat) {
   return seat === 0 ? '东' : seat === 1 ? '南' : '西';
 }
 
-function startClock(s) {
+export function startClock(s) {
   clearInterval(clockInt);
   const el = $('turnClock');
   if (s.turnSecondsLeft == null) {
@@ -82,7 +82,7 @@ function renderPlayArea(s) {
   status.textContent = '';
   if (s.phase === 'waiting') {
     const seated = s.seats.filter(Boolean).length;
-    status.textContent = `等待玩家… (${seated}/3)　全部「准备」后开局`;
+    status.textContent = `等待玩家… (${seated}/3)　人满自动开局`;
   } else if (s.phase === 'bidding') {
     const turnName = s.seats[s.turn]?.name || '';
     status.textContent = s.turn === s.yourSeat ? '轮到你叫分' : `等待 ${turnName} 叫分…`;
@@ -163,8 +163,10 @@ function renderActions(s, context) {
 
   if (s.phase === 'waiting') {
     if (mySeat >= 0) {
-      const ready = s.seats[mySeat]?.ready;
-      a.appendChild(button(ready ? '取消准备' : '准备', () => socket.emit('room:ready'), ready ? '' : 'primary'));
+      const seated = s.seats.filter(Boolean).length;
+      const wait = button(`等待玩家 (${seated}/3)`, () => {});
+      wait.disabled = true;
+      a.appendChild(wait);
       if (debugMode) a.appendChild(button('测试满员发牌', () => socket.emit('debug:fillRoom'), 'debug'));
     } else {
       const free = s.seats.includes(null);
@@ -271,5 +273,4 @@ export function renderTable(state, context) {
   renderMe(s, context.selected, context.onToggleCard);
   renderActions(s, context);
   if (s.phase === 'finished' && s.result) renderResult(s, context.socket);
-  startClock(s);
 }

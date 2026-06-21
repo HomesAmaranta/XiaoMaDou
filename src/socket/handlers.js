@@ -69,10 +69,10 @@ export function registerSocketHandlers(io) {
       room.ready[seat] = false;
       if (room.phase === 'bidding' || room.phase === 'playing') {
         room.phase = 'waiting';
-        room.ready = [false, false, false];
         room.resetRound();
         room.addLog('有玩家离开,本局结束');
       }
+      room.ready = room.seats.map(Boolean); // 在座玩家保持已准备
     }
     room.spectators.delete(player.id);
     if (room.isEmpty()) {
@@ -174,8 +174,11 @@ export function registerSocketHandlers(io) {
       const freeSeat = room.seats.indexOf(null);
       if (freeSeat >= 0 && room.seatOf(player.id) < 0 && room.phase === 'waiting') {
         room.seats[freeSeat] = player.id;
+        room.ready[freeSeat] = true; // 入座即默认准备
         if (!(player.id in room.scores)) room.scores[player.id] = 0;
         room.spectators.delete(player.id);
+        room.startRoundIfReady(); // 人满自动开始
+        armRoomTimer(room);
       } else if (room.seatOf(player.id) < 0) {
         room.spectators.add(player.id);
       }
@@ -312,8 +315,11 @@ export function registerSocketHandlers(io) {
       const freeSeat = room.seats.indexOf(null);
       if (freeSeat >= 0) {
         room.seats[freeSeat] = player.id;
+        room.ready[freeSeat] = true; // 入座即默认准备
         if (!(player.id in room.scores)) room.scores[player.id] = 0;
         room.spectators.delete(player.id);
+        room.startRoundIfReady(); // 人满自动开始
+        armRoomTimer(room);
         broadcastRoom(room);
         broadcastLobby();
       }

@@ -108,7 +108,7 @@ export class Room {
   startRoundIfReady() {
     if (this.phase !== 'waiting') return false;
     if (!this.isFull()) return false;
-    if (!this.ready.every(Boolean)) return false;
+    // 不再需要手动准备:人满即开局
     this.startRound();
     return true;
   }
@@ -303,10 +303,13 @@ export class Room {
       return;
     }
     this.phase = 'waiting';
-    this.ready = [false, false, false];
     this.roundNo = this.completedRounds + 1;
     this.resetRound();
-    this.addLog('点击「准备」开始下一局');
+    this.ready = this.seats.map(Boolean);
+    // 人满则直接开下一局,无需准备
+    if (!this.startRoundIfReady()) {
+      this.addLog('等待玩家入座,人满自动开始下一局');
+    }
   }
 
   viewFor(playerId) {
